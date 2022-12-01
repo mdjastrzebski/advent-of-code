@@ -1,23 +1,20 @@
 import * as fs from "node:fs";
 
-const inputLines = fs.readFileSync("input.txt", "utf-8").split(/\r?\n/);
+function readInputGroups() {
+  const inputChunks = fs.readFileSync("input.txt", "utf-8").split(/\n{2,}/);
+  return inputChunks.map((input) => input.split(/\n/));
+}
 
-const values = [];
+function sum(array) {
+  return array.reduce((total, value) => total + value, 0);
+}
 
-let currentValue = 0;
-inputLines.forEach((line) => {
-  if (!line.trim()) {
-    console.log("Group value:", currentValue);
-
-    values.push(currentValue);
-    currentValue = 0;
-    return;
-  }
-
-  currentValue += parseInt(line, 10);
+const totals = readInputGroups().map((group) => {
+  const values = group.map((n) => parseInt(n, 10));
+  return sum(values);
 });
 
-values.sort((a, b) => b - a);
+totals.sort((a, b) => b - a);
 
-console.log("Group values:", values);
-console.log("Top 3 value:", values[0] + values[1] + values[2]);
+console.log("DEBUG totals:", totals);
+console.log("RESULT:", sum(totals.slice(0, 3)));
