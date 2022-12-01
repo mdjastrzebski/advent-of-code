@@ -6,7 +6,7 @@ let maxValue = 0;
 let currentValue = 0;
 inputLines.forEach((line) => {
   if (!line.trim()) {
-    console.log("Line value:", currentValue, maxValue);
+    console.log("Group value:", currentValue, maxValue);
 
     maxValue = Math.max(maxValue, currentValue);
     currentValue = 0;
