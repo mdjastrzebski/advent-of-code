@@ -1,11 +1,8 @@
 import * as fs from "node:fs";
+import _ from "lodash";
 
 function parseLines() {
   return fs.readFileSync("input.txt", "utf-8").split(/\n/);
-}
-
-function sum(array) {
-  return array.reduce((total, value) => total + value, 0);
 }
 
 function getPrio(char) {
@@ -27,10 +24,10 @@ function getPrio(char) {
 const lines = parseLines().map((line) => {
   const first = line.slice(0, line.length / 2);
   const second = line.slice(line.length / 2);
-  const commonItem = first.split("").filter((char) => second.includes(char))[0];
+  const commonItem = _.intersection(first.split(""), second.split(""))[0];
   const result = getPrio(commonItem);
   console.log("DEBUG", result, commonItem, first, second);
   return result;
 });
 
-console.log("RESULT:", sum(lines));
+console.log("RESULT:", _.sum(lines));

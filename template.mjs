@@ -1,4 +1,5 @@
 import * as fs from "node:fs";
+import _ from "lodash";
 
 function parseLines() {
   return fs.readFileSync("input.txt", "utf-8").split(/\n/);
@@ -9,14 +10,12 @@ function parseLineGroups() {
   return groups.map((input) => input.split(/\n/));
 }
 
-function sum(array) {
-  return array.reduce((total, value) => total + value, 0);
-}
-
 const lines = parseLines().map((line) => {
   const parts = line.split(/\s+/);
-  console.log("DEBUG line", parts);
-  return parts;
+  const result = parts[0];
+
+  console.log("DEBUG", result, parts);
+  return result;
 });
 
-console.log("RESULT:", sum(lines));
+console.log("RESULT:", _.sum(lines));
