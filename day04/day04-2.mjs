@@ -5,17 +5,19 @@ function parseLines() {
   return fs.readFileSync("input.txt", "utf-8").split(/\n/);
 }
 
-function parseLineGroups() {
-  const groups = fs.readFileSync("input.txt", "utf-8").split(/\n\s*\n/);
-  return groups.map((input) => input.split(/\n/));
-}
+const pairs = parseLines().map((line) =>
+  line.split(",").map((pair) => pair.split("-").map((n) => parseInt(n, 10)))
+);
 
-const lines = parseLines().map((line) => {
-  const parts = line.split(/\s+/);
-  const result = parts[0];
+let count = 0;
+pairs.forEach(([first, second]) => {
+  const isOverlapping = first[0] <= second[1] && second[0] <= first[1];
 
-  console.log("DEBUG", result, parts);
-  return result;
+  console.log("DEBUG set", first, second, isOverlapping);
+
+  if (isOverlapping) {
+    count += 1;
+  }
 });
 
-console.log("RESULT:", _.sum(lines));
+console.log("RESULT:", pairs, count);
