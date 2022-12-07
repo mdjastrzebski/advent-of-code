@@ -1,5 +1,4 @@
 import * as fs from "node:fs";
-import * as path from "node:path";
 import _ from "lodash";
 
 function readLines() {
@@ -11,19 +10,20 @@ console.log("DEBUG input", inputs);
 
 function mapToFolder(name, inputs) {
   let size = 0;
-  const sub = [];
+  const children = [];
   while (inputs.length > 0) {
     const line = inputs.splice(0, 1)[0];
     const tokens = line.split(/\s+/);
-    console.log("STEP:", tokens);
+    console.log("STEP line:", tokens);
+
     if (line === "$ cd ..") {
-      console.log("STEP UP:", name, size);
-      return { name, size, sub };
+      console.log("  STEP up:", name, size);
+      return { name, size, children };
     } else if (line.startsWith("$ cd ")) {
-      console.log("  STEP INTO:", name, tokens[2]);
+      console.log("  STEP into:", tokens[2]);
       const folder = mapToFolder(tokens[2], inputs);
-      sub.push(folder);
-      console.log("  STEP RETURN:", name, folder);
+      children.push(folder);
+      console.log("  STEP return:", tokens[2], folder);
       size += folder.size;
       continue;
     }
@@ -31,27 +31,30 @@ function mapToFolder(name, inputs) {
     const itemSize = parseInt(tokens[0]);
     if (!Number.isNaN(itemSize)) {
       size += itemSize;
-      console.log("  STEP FILE:", name, itemSize);
+      console.log("  STEP file:", itemSize, tokens[1]);
       continue;
     }
 
-    console.log("  STEP OTHER", name, line);
+    console.log("  STEP other:", line);
   }
 
   console.log("STEP END:", name, size);
-  return { name, size, sub };
+  return { name, size, children };
 }
 
-let root = mapToFolder("/", inputs);
+let root = mapToFolder("", inputs);
+// console.log("DEBUG tree:", JSON.stringify(root, null, 2));
+
+function treeVisit(node, callback) {
+  callback(node);
+  node.children.forEach((child) => treeVisit(child, callback));
+}
 
 let total = 0;
-function visit(node) {
+treeVisit(root, (node) => {
   if (node.size <= 100000) {
     total += node.size;
   }
-  node.sub.forEach((sub) => visit(sub));
-}
+});
 
-visit(root);
-
-console.log("RESULT:", total, JSON.stringify(root, null, 2));
+console.log("RESULT:", total);
