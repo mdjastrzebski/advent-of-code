@@ -1,12 +1,13 @@
 import * as fs from "node:fs";
 
 function readLines() {
-  return fs.readFileSync("input.txt", "utf-8").split(/\n/);
+  return fs.readFileSync("input1.txt", "utf-8").split(/\n/);
 }
 
 const grid = readLines().map((line) =>
   line.split("").map((c) => parseInt(c, 10))
 );
+
 console.log("INPUT:", grid);
 
 function getRightScore(x, y) {
@@ -67,15 +68,15 @@ function getScore(x, y) {
   const up = getUpScore(x, y);
   const down = getDownScore(x, y);
   const result = left * right * up * down;
-  console.log("  DEBUG score", left, right, up, down, result);
+  console.log("  score", result, "=", left, right, up, down);
   return result;
 }
 
 let max = 0;
 for (let y = 0; y < grid.length; y++) {
   for (let x = 0; x < grid[0].length; x++) {
+    console.log("Item", grid[y][x], "-", x, y);
     const score = getScore(x, y);
-    console.log("DEBUG score", score, "-", grid[y][x], "-", x, y);
     if (score > max) {
       max = score;
     }

@@ -5,17 +5,17 @@ function readLines() {
   return fs.readFileSync("input.txt", "utf-8").split(/\n/);
 }
 
-function readLineGroups() {
-  const groups = fs.readFileSync("input.txt", "utf-8").split(/\n\s*\n/);
-  return groups.map((input) => input.split(/\n/));
-}
+const lines = readLines().map((line) =>
+  line.split("").map((c) => parseInt(c, 10))
+);
 
-const inputs = readLines().map((line) => line.split(/\s+/));
+console.log("INPUT:", lines);
 
 let result = 0;
-inputs.forEach((line) => {
-  result += line[0];
-  console.log("DEBUG step", result, line);
+lines.forEach((line) => {
+  console.log("Line", line);
+  result += 0;
+  console.log("  result", result);
 });
 
 console.log("RESULT:", result);
