@@ -1,15 +1,4 @@
-import * as fs from "node:fs";
 import _ from "lodash";
-
-function readLines() {
-  return fs.readFileSync("input1.txt", "utf-8").split(/\n/);
-}
-
-function printGrid(grid) {
-  grid.forEach((row) => {
-    console.log(row.join(""));
-  });
-}
 
 function encodeNode(node) {
   const [x, y] = node;
@@ -40,12 +29,11 @@ function bfs(...startNodes) {
 
   while (queue.length > 0) {
     const head = queue.splice(0, 1)[0];
-    const [x, y] = head;
     const distance = nodeDistances.get(encodeNode(head));
     console.log("Processing", head, distance);
 
     // Check for early return
-    const shouldFinishEarly = _.isEqual(head, end);
+    const shouldFinishEarly = false;
     if (shouldFinishEarly) {
       console.log("BFS Finish (early)", head);
       return nodeDistances;
@@ -61,9 +49,7 @@ function bfs(...startNodes) {
       }
 
       // Restrict neighbor visits
-      const [nx, ny] = neighbor;
-      const canVisit =
-        getElevation(grid[ny][nx]) <= getElevation(grid[y][x]) + 1;
+      const canVisit = true;
       if (canVisit) {
         queue.push(neighbor);
         nodeDistances.set(neighborCode, distance + 1);
@@ -77,33 +63,3 @@ function bfs(...startNodes) {
   console.log("BFS Finish");
   return nodeDistances;
 }
-
-function getElevation(char) {
-  if (char === "S") return 0;
-  if (char === "E") return "z".charCodeAt(0) - "a".charCodeAt(0);
-  else return char.charCodeAt(0) - "a".charCodeAt(0);
-}
-
-const grid = readLines().map((line) => line.split(""));
-const height = grid.length;
-const width = grid[0].length;
-
-let starts = [];
-let end;
-for (let y = 0; y < grid.length; y++) {
-  for (let x = 0; x < grid[0].length; x++) {
-    if (grid[y][x] === "S" || grid[y][x] === "a") {
-      starts.push([x, y]);
-    } else if (grid[y][x] === "E") {
-      end = [x, y];
-    }
-  }
-}
-
-console.log("INPUT");
-printGrid(grid);
-console.log("INPUT", height, width, starts, end);
-
-const dist = bfs(...starts);
-console.log("OUTPUT", dist);
-console.log("RESULT:", dist.get(encodeNode(end)));
