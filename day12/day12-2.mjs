@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import _ from "lodash";
 
 function readLines() {
-  return fs.readFileSync("input.txt", "utf-8").split(/\n/);
+  return fs.readFileSync("input1.txt", "utf-8").split(/\n/);
 }
 
 function printGrid(grid) {
@@ -13,11 +13,6 @@ function printGrid(grid) {
 
 function encodeNode([x, y]) {
   return `${x},${y}`;
-}
-
-function decodeNode(node) {
-  const [x, y] = node.split(",");
-  return [parseInt(x), parseInt(y)];
 }
 
 function getElevation(char) {
@@ -33,19 +28,9 @@ function getNeighbors([x, y]) {
     [x, y - 1],
     [x, y + 1],
   ];
-  let res = neighbors.filter(
+  return neighbors.filter(
     ([nx, ny]) => nx >= 0 && nx < width && ny >= 0 && ny < height
   );
-
-  //console.log("ELEV", res);
-
-  res = res.filter(
-    ([nx, ny]) => getElevation(grid[ny][nx]) <= getElevation(grid[y][x]) + 1
-  );
-
-  //console.log("ELEV 2", res);
-
-  return res;
 }
 
 const grid = readLines().map((line) => line.split(""));
@@ -80,6 +65,8 @@ while (queue.length > 0) {
   const head = queue.splice(0, 1)[0];
   const distHead = dist.get(encodeNode(head));
   console.log("HEAD", head, distHead);
+  const [x, y] = head;
+
   if (head[0] === end[0] && head[1] === end[1]) {
     console.log("FOUND END", head, end);
     result = distHead;
@@ -88,12 +75,22 @@ while (queue.length > 0) {
 
   const neighbors = getNeighbors(head);
   for (const [nx, ny] of neighbors) {
-    console.log("  NEIGHBOR", [nx, ny]);
-
     const neighbor = encodeNode([nx, ny]);
     if (dist.get(neighbor) == null) {
-      queue.push([nx, ny]);
-      dist.set(neighbor, distHead + 1);
+      const isElevationOk =
+        getElevation(grid[ny][nx]) <= getElevation(grid[y][x]) + 1;
+      console.log(
+        "  NEW NEIGHBOR",
+        [nx, ny],
+        grid[ny][nx],
+        grid[y][x],
+        isElevationOk
+      );
+      if (isElevationOk) {
+        console.log("    TERRAIN OK", [nx, ny], distHead + 1);
+        queue.push([nx, ny]);
+        dist.set(neighbor, distHead + 1);
+      }
     }
   }
 }
