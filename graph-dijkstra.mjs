@@ -1,18 +1,9 @@
-import * as fs from "node:fs";
 import _ from "lodash";
 
-function parseLines() {
-  return fs.readFileSync("input.txt", "utf-8").split(/\n/);
-}
-
-const nodes = parseLines().map((line) => {
-  return line.split("").map((ch) => ch.charCodeAt(0) - "0".charCodeAt(0));
-});
-
-const height = nodes.length;
-const width = nodes[0].length;
-const end = [height - 1, width - 1];
-const endCode = encodeNode(end);
+const nodes;
+const height;
+const width;
+const endCode;
 
 function encodeNode(node) {
   const [x, y] = node;
@@ -117,4 +108,5 @@ function dijkstra(...startNodes) {
 }
 
 const { nodeDistances, previousNode } = dijkstra([0, 0]);
+
 console.log("RESULT", endCode, nodeDistances.get(endCode));

@@ -61,5 +61,5 @@ function bfs(...startNodes) {
   }
 
   console.log("BFS Finish");
-  return nodeDistances;
+  return { nodeDistances };
 }
