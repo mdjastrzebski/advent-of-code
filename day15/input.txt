@@ -1,0 +1,54 @@
+Sensor at x=3972136, y=2425195: closest beacon is at x=4263070, y=2991690
+Sensor at x=3063440, y=2824421: closest beacon is at x=2870962, y=2380928
+Sensor at x=982575, y=3224220: closest beacon is at x=883832, y=2000000
+Sensor at x=3987876, y=3879097: closest beacon is at x=4101142, y=3623324
+Sensor at x=2202219, y=115239: closest beacon is at x=2756860, y=-955842
+Sensor at x=2337255, y=2939761: closest beacon is at x=2870962, y=2380928
+Sensor at x=1942286, y=3935612: closest beacon is at x=2942943, y=3548053
+Sensor at x=228100, y=3955166: closest beacon is at x=-7488, y=4058847
+Sensor at x=2114394, y=2368537: closest beacon is at x=2870962, y=2380928
+Sensor at x=3658485, y=2855273: closest beacon is at x=4263070, y=2991690
+Sensor at x=3731843, y=3995527: closest beacon is at x=4101142, y=3623324
+Sensor at x=1311535, y=1294676: closest beacon is at x=883832, y=2000000
+Sensor at x=3533617, y=3590533: closest beacon is at x=4101142, y=3623324
+Sensor at x=341495, y=287725: closest beacon is at x=110643, y=-1160614
+Sensor at x=1533864, y=2131620: closest beacon is at x=883832, y=2000000
+Sensor at x=1179951, y=1876387: closest beacon is at x=883832, y=2000000
+Sensor at x=3403590, y=1619877: closest beacon is at x=2870962, y=2380928
+Sensor at x=2756782, y=3344622: closest beacon is at x=2942943, y=3548053
+Sensor at x=14753, y=3818113: closest beacon is at x=-7488, y=4058847
+Sensor at x=3808841, y=388411: closest beacon is at x=4559391, y=972750
+Sensor at x=3129774, y=3401225: closest beacon is at x=2942943, y=3548053
+Sensor at x=2710780, y=3978709: closest beacon is at x=2942943, y=3548053
+Sensor at x=88084, y=2475915: closest beacon is at x=883832, y=2000000
+Sensor at x=2503969, y=3564612: closest beacon is at x=2942943, y=3548053
+Sensor at x=3954448, y=3360708: closest beacon is at x=4101142, y=3623324
+Sensor at x=2724475, y=1736595: closest beacon is at x=2870962, y=2380928
+
+
+{ sensor: [3972136, 2425195], beacon: [4263070, 2991690]},
+{ sensor: [3063440, 2824421], beacon: [2870962, 2380928]},
+{ sensor: [982575, 3224220], beacon: [883832, 2000000]},
+{ sensor: [3987876, 3879097], beacon: [4101142, 3623324]},
+{ sensor: [2202219, 115239], beacon: [2756860, -955842]},
+{ sensor: [2337255, 2939761], beacon: [2870962, 2380928]},
+{ sensor: [1942286, 3935612], beacon: [2942943, 3548053]},
+{ sensor: [228100, 3955166], beacon: [-7488, 4058847]},
+{ sensor: [2114394, 2368537], beacon: [2870962, 2380928]},
+{ sensor: [3658485, 2855273], beacon: [4263070, 2991690]},
+{ sensor: [3731843, 3995527], beacon: [4101142, 3623324]},
+{ sensor: [1311535, 1294676], beacon: [883832, 2000000]},
+{ sensor: [3533617, 3590533], beacon: [4101142, 3623324]},
+{ sensor: [341495, 287725], beacon: [110643, -1160614]},
+{ sensor: [1533864, 2131620], beacon: [883832, 2000000]},
+{ sensor: [1179951, 1876387], beacon: [883832, 2000000]},
+{ sensor: [3403590, 1619877], beacon: [2870962, 2380928]},
+{ sensor: [2756782, 3344622], beacon: [2942943, 3548053]},
+{ sensor: [14753, 3818113], beacon: [-7488, 4058847]},
+{ sensor: [3808841, 388411], beacon: [4559391, 972750]},
+{ sensor: [3129774, 3401225], beacon: [2942943, 3548053]},
+{ sensor: [2710780, 3978709], beacon: [2942943, 3548053]},
+{ sensor: [88084, 2475915], beacon: [883832, 2000000]},
+{ sensor: [2503969, 3564612], beacon: [2942943, 3548053]},
+{ sensor: [3954448, 3360708], beacon: [4101142, 3623324]},
+{ sensor: [2724475, 1736595], beacon: [2870962, 2380928]},
