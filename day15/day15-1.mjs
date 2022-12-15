@@ -1,5 +1,5 @@
-import * as fs from "node:fs";
 import _ from "lodash";
+import { rangeLength, rangesCompact } from "../utils/range.mjs";
 
 const input = [
   { sensor: [3972136, 2425195], beacon: [4263070, 2991690] },
@@ -42,55 +42,35 @@ for (let i = 0; i < input.length; i++) {
 
 console.log("INPUT", input);
 
-function isValidBeaconLocation(x, y) {
-  for (let i = 0; i < input.length; i++) {
-    if (_.isEqual([x, y], input[i].beacon)) {
-      //console.log("  REJECT beacon", [x, y]);
-      return true;
-    }
+function blockedRangeForSensor(y, { sensor, distance }) {
+  const yDistance = Math.abs(sensor[1] - y);
+  const distanceAtY = distance - yDistance;
+  if (distanceAtY < 0) return null;
 
-    const distance = getDistance(input[i].sensor, [x, y]);
-    if (distance <= input[i].distance) {
-      //   console.log(
-      //     "  REJECT distance",
-      //     [x, y],
-      //     input[i].sensor,
-      //     distance,
-      //     input[i].distance
-      //   );
-
-      return false;
-    }
-
-    // console.log(
-    //   "  ACCEPT sensor",
-    //   [x, y],
-    //   input[i].sensor,
-    //   distance,
-    //   input[i].distance
-    // );
-  }
-
-  return true;
+  return [sensor[0] - distanceAtY, sensor[0] + distanceAtY];
 }
 
-let minX = Infinity;
-let maxX = -Infinity;
-for (let i = 0; i < input.length; i++) {
-  const currentMinX = input[i].sensor[0] - input[i].distance;
-  const currentMaxX = input[i].sensor[0] + input[i].distance;
-  minX = Math.min(minX, currentMinX);
-  maxX = Math.max(maxX, currentMaxX);
+function blockedRangesForAllSensors(y) {
+  const ranges = input
+    .map((item) => blockedRangeForSensor(y, item))
+    .filter((r) => r != null);
+  return rangesCompact(ranges);
 }
-
-console.log("DEBUG range", [minX, maxX]);
 
 const targetY = 2000000;
+const blockedRanges = blockedRangesForAllSensors(targetY);
+
 let result = 0;
-for (let x = minX; x <= maxX; x++) {
-  const isValid = isValidBeaconLocation(x, targetY);
-  if (x % 100000 === 0) console.log("DEBUG position", [x, targetY], isValid);
-  result += !isValid ? 1 : 0;
-}
+blockedRanges.forEach((range) => {
+  console.log("  BLOCKED RANGE:", range);
+  result += rangeLength(range);
+});
+
+const beacons = _.uniqBy(
+  input.map((i) => i.beacon),
+  (b) => `${b[0]}-${b[1]}`
+);
+console.log("  BEACONS:", beacons);
+result -= beacons.filter((b) => b[1] === targetY).length;
 
 console.log("RESULT:", result);

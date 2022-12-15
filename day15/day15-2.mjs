@@ -1,5 +1,5 @@
-import * as fs from "node:fs";
 import _ from "lodash";
+import { rangeLength, rangesCompact, rangesInvert } from "../utils/range.mjs";
 
 const input = [
   { sensor: [3972136, 2425195], beacon: [4263070, 2991690] },
@@ -42,14 +42,7 @@ for (let i = 0; i < input.length; i++) {
 
 console.log("INPUT", input);
 
-function getTuningFrequency(x, y) {
-  return x * 4000000 + y;
-}
-
-let maxSearchX = 4000000;
-let maxSearchY = 4000000;
-
-function getBlockedRangeForSensorForY(y, { sensor, distance }) {
+function blockedRangeForSensor(y, { sensor, distance }) {
   const yDistance = Math.abs(sensor[1] - y);
   const distanceAtY = distance - yDistance;
   if (distanceAtY < 0) return null;
@@ -57,63 +50,24 @@ function getBlockedRangeForSensorForY(y, { sensor, distance }) {
   return [sensor[0] - distanceAtY, sensor[0] + distanceAtY];
 }
 
-function hasOverlap(rangeA, rangeB) {
-  return rangeA[0] - 1 <= rangeB[1] && rangeB[0] - 1 <= rangeA[1];
+function blockedRangesForAllSensors(y) {
+  const ranges = input
+    .map((item) => blockedRangeForSensor(y, item))
+    .filter((r) => r != null);
+  return rangesCompact(ranges);
 }
 
-function compactRanges(ranges) {
-  ranges.sort((a, b) => a[0] - b[0]);
-  const result = [];
-  for (let i = 0; i < ranges.length; i++) {
-    if (result.length === 0) {
-      result.push(ranges[i]);
-    } else {
-      const last = result[result.length - 1];
-      if (hasOverlap(last, ranges[i])) {
-        result[result.length - 1] = [
-          Math.min(last[0], ranges[i][0]),
-          Math.max(last[1], ranges[i][1]),
-        ];
-      } else {
-        result.push(ranges[i]);
-      }
-    }
-  }
-  return result;
+function getTuningFrequency(x, y) {
+  return x * 4000000 + y;
 }
 
-function addToRangeList(list, range) {
-  return compactRanges([...list, range]);
-}
-
-function getBlockedRangesForAllSensorsForY(y) {
-  let ranges = [];
-  for (let i = 0; i < input.length; i++) {
-    const sensorRange = getBlockedRangeForSensorForY(y, input[i]);
-    // console.log(
-    //   "  sensorRange",
-    //   input[i].sensor,
-    //   input[i].distance,
-    //   sensorRange
-    // );
-    if (sensorRange != null) {
-      // console.log("  beforeAdd", ranges, sensorRange);
-      ranges = addToRangeList(ranges, sensorRange);
-      // console.log("  afterAdd", ranges);
-    }
-  }
-
-  return ranges;
-}
+let maxSearchX = 4000000;
+let maxSearchY = 4000000;
 
 for (let y = 0; y <= maxSearchY; y++) {
-  //console.log("Y coord", y);
-  const blockedRanges = getBlockedRangesForAllSensorsForY(y);
-  if (blockedRanges.length > 1) {
-    console.log("  Result", y, blockedRanges);
+  const blockedRanges = blockedRangesForAllSensors(y);
+  const allowedRanges = rangesInvert([0, maxSearchX], blockedRanges);
+  if (allowedRanges.length > 0) {
+    console.log("  Result", getTuningFrequency(allowedRanges[0][0], y));
   }
-  // if (ranges.length > 0) {
-  //   console.log("  FOUND", y, ranges, getTuningFrequency(ranges[0][0], y));
-  //   break;
-  // }
 }
