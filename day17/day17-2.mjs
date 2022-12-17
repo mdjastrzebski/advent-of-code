@@ -9,10 +9,10 @@ function readLine() {
 }
 
 const wind = readLine();
-const windCurrent = [...wind];
 console.log("WIND", wind.length);
 
-const board = _.range(0, 4000000).map(() => 0b0);
+let board = new Array(1_000_000).fill(0b0);
+console.log("ALLOC board", board.length);
 
 const shapes = [
   [0b1111],
@@ -45,20 +45,24 @@ function addShape([x, y], shape) {
   });
 }
 
-let topY = 0;
+let topY = -1;
+let windIdx = -1;
 
-function dropShape(shapeNo, wind) {
+function dropShape(shapeNo) {
   logVerbose("DropShape", shapeNo, wind[0], wind[1], wind[2], wind[3], wind[4]);
   const shape = shapes[shapeNo];
-  const startY = topY + 3;
+  const startY = topY + 4;
   const startX = 2;
 
   let x = startX;
   let y = startY;
   logVerbose("  Start pos", x, y);
   while (true) {
+    windIdx = (windIdx + 1) % wind.length;
+
     // Move sideways
-    const windDirection = wind.shift();
+    const windDirection = wind[windIdx];
+
     if (windDirection === "<") {
       if (canFitShape([x - 1, y], shape)) {
         logVerbose("  Move left", x - 1, y);
@@ -98,24 +102,12 @@ function getTopY() {
     }
   }
 
-  logVerbose("  TopY", y + 1);
-  return y + 1;
-}
-
-function getTopYOrig() {
-  let y = board.length - 1;
-  for (; y > 0; y -= 1) {
-    if (board[y] !== 0b0) {
-      break;
-    }
-  }
-
-  logVerbose("  TopY", y + 1);
-  return y + 1;
+  logVerbose("  TopY", y);
+  return y;
 }
 
 function printBoard() {
-  let y = getTopY();
+  let y = getTopY() + 1;
   console.log("Board starts at", y);
   for (; y >= 0; y -= 1) {
     console.log(rowBitsToLine(board[y]));
@@ -133,14 +125,39 @@ function rowBitsToLine(row) {
     .join("");
 }
 
-for (let i = 0; i < 2022; i += 1) {
-  let shapeNo = i % 5;
-  if (windCurrent.length < 100) {
-    windCurrent.push(...wind);
+function getSignature(y, shapeNo, windIdx) {
+  let signature = `${shapeNo}-${windIdx}-`;
+  for (let i = 0; i <= 200; i += 1) {
+    signature += board[y - i].toString(16).padStart(2, "0");
   }
-
-  dropShape(shapeNo, windCurrent);
-  //printBoard();
+  return signature;
 }
 
-console.log("RESULT", topY);
+const sigs = new Map();
+const totalRounds = 1_000_000_000_000;
+let t = 0;
+let addedY = 0;
+for (; t < totalRounds; t += 1) {
+  let shapeNo = t % 5;
+  dropShape(shapeNo);
+
+  if (addedY === 0 && t >= 2022) {
+    const sig = getSignature(topY, shapeNo, windIdx);
+    if (sigs.has(sig)) {
+      const [t0, y0] = sigs.get(sig);
+      const dt = t - t0;
+      const dy = topY - y0;
+
+      const times = Math.floor((totalRounds - t) / dt);
+      t += times * dt;
+      addedY += times * dy;
+      if (times > 0) {
+        console.log("  FOUND CYCLE", t, topY + addedY);
+      }
+    } else {
+      sigs.set(sig, [t, topY]);
+    }
+  }
+}
+
+console.log("RESULT", topY + addedY + 1, t);

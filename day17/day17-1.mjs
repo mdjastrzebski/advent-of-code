@@ -5,7 +5,7 @@ import _ from "lodash";
 const logVerbose = () => {};
 
 function readLine() {
-  return fs.readFileSync("input.txt", "utf-8").split("");
+  return fs.readFileSync("input1.txt", "utf-8").split("");
 }
 
 const wind = readLine();
@@ -45,12 +45,12 @@ function addShape([x, y], shape) {
   });
 }
 
-let topY = 0;
+let topY = -1;
 
 function dropShape(shapeNo, wind) {
   logVerbose("DropShape", shapeNo, wind[0], wind[1], wind[2], wind[3], wind[4]);
   const shape = shapes[shapeNo];
-  const startY = topY + 3;
+  const startY = topY + 4;
   const startX = 2;
 
   let x = startX;
@@ -98,24 +98,12 @@ function getTopY() {
     }
   }
 
-  logVerbose("  TopY", y + 1);
-  return y + 1;
-}
-
-function getTopYOrig() {
-  let y = board.length - 1;
-  for (; y > 0; y -= 1) {
-    if (board[y] !== 0b0) {
-      break;
-    }
-  }
-
-  logVerbose("  TopY", y + 1);
-  return y + 1;
+  logVerbose("  TopY", y);
+  return y;
 }
 
 function printBoard() {
-  let y = getTopY();
+  let y = getTopY() + 1;
   console.log("Board starts at", y);
   for (; y >= 0; y -= 1) {
     console.log(rowBitsToLine(board[y]));
@@ -133,14 +121,14 @@ function rowBitsToLine(row) {
     .join("");
 }
 
-for (let i = 0; i < 2022; i += 1) {
+for (let i = 0; i < 10; i += 1) {
   let shapeNo = i % 5;
   if (windCurrent.length < 100) {
     windCurrent.push(...wind);
   }
 
   dropShape(shapeNo, windCurrent);
-  //printBoard();
+  printBoard();
 }
 
-console.log("RESULT", topY);
+console.log("RESULT", topY + 1);
