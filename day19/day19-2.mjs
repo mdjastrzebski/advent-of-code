@@ -1,8 +1,9 @@
 import * as fs from "node:fs";
 import _ from "lodash";
+import { LargeSet } from "../utils/LargeSet.mjs";
 
 function readLines() {
-  return fs.readFileSync("input0.txt", "utf-8").split(/\n/);
+  return fs.readFileSync("input.txt", "utf-8").split(/\n/);
 }
 
 const blueprints = readLines().map((line) => {
@@ -29,8 +30,8 @@ const blueprints = readLines().map((line) => {
 
 console.log("INPUT:", blueprints);
 
-function encodeState(t, res, robots) {
-  return `${t}-${res.join(",")}-${robots.join(",")}`;
+function encodeState([res, robots]) {
+  return `${res.join(",")}-${robots.join(",")}`;
 }
 
 function getMaxGeode(blueprint) {
@@ -39,8 +40,10 @@ function getMaxGeode(blueprint) {
 
   let maxGeode = 0;
   let bestPath = null;
-  const visited = new Set();
-  let visitHit = 0;
+  const visited = new LargeSet(
+    (key) => encodeState(key.slice(1)),
+    (key) => key[0]
+  );
 
   const oReq = Math.max(oo, co, bo, go);
 
@@ -51,7 +54,7 @@ function getMaxGeode(blueprint) {
         res[3],
         buildPath,
         visited.size,
-        visitHit
+        visited.hitRatio
       );
       maxGeode = res[3];
       bestPath = buildPath;
@@ -68,16 +71,15 @@ function getMaxGeode(blueprint) {
     res[1] = Math.min(res[1], t * bc - robots[1] * (t - 1));
     res[2] = Math.min(res[2], t * gb - robots[2] * (t - 1));
 
-    const stateKey = encodeState(t, res, robots);
-    if (visited.has(stateKey)) {
-      visitHit += 1;
+    const state = [t, res, robots];
+    if (visited.has(state)) {
       return;
     }
 
-    visited.add(stateKey);
+    visited.add(state);
 
     if (t >= 20) {
-      console.log("DFS", t, res, robots, stateKey, visited.size, visitHit);
+      console.log("DFS", state, visited.size, visited.hitRatio);
     }
 
     const newResBase = [
@@ -97,7 +99,7 @@ function getMaxGeode(blueprint) {
       ];
       let newRobots = [robots[0], robots[1], robots[2], robots[3] + 1];
       dfs(t - 1, newRes, newRobots, buildPath + "g");
-      return;
+      //return;
     }
 
     // Obs robot
@@ -139,14 +141,14 @@ function getMaxGeode(blueprint) {
     dfs(t - 1, newResBase, robots, buildPath + "_");
   };
 
-  dfs(24, [0, 0, 0, 0], [1, 0, 0, 0], []);
+  dfs(32, [0, 0, 0, 0], [1, 0, 0, 0], []);
   return maxGeode;
 }
 
-let result = 0;
-blueprints.forEach((blueprint) => {
+let result = 1;
+blueprints.slice(0, 3).forEach((blueprint) => {
   const maxGeode = getMaxGeode(blueprint);
-  result += blueprint.number * maxGeode;
+  result *= maxGeode;
   console.log("BLUEPRINT", blueprint.number, maxGeode);
 });
 
