@@ -5,8 +5,8 @@ lines = input.split('\n')
 
 
 def count_total_scratchcards(cards):
-    # Start with the original set of scratchcards
-    total_scratchcards = len(cards)
+    # Initialize counters for each card
+    card_counters = [1] * len(cards)  # Start with one copy of each card
 
     # Convert card data into a list of tuples for easier processing
     card_data = []
@@ -16,28 +16,15 @@ def count_total_scratchcards(cards):
         winning_numbers = set(map(int, winning_numbers.split()))
         your_numbers = set(map(int, your_numbers.split()))
         matches = winning_numbers.intersection(your_numbers)
-        card_data.append((len(matches), matches))
+        card_data.append(len(matches))
 
-    # Process each card to calculate how many copies of subsequent cards are won
-    # Initialize a list to count won cards for each original card
-    won_cards = [0] * len(cards)
-    for i, (match_count, _) in enumerate(card_data):
-        for j in range(i + 1, min(i + 1 + match_count, len(cards))):
-            won_cards[j] += 1
+    # Process each card and update counters for subsequent cards
+    for i, match_count in enumerate(card_data):
+        for j in range(i + 1, min(i + 1 + match_count, len(card_data))):
+            card_counters[j] += card_counters[i]
 
-    # Process won cards and their copies
-    i = 0
-    while i < len(won_cards):
-        copies = won_cards[i]
-        # Check if there are copies and it's not the last card
-        if copies > 0 and i < len(card_data) - 1:
-            match_count, _ = card_data[i]
-            for j in range(i + 1, min(i + 1 + match_count, len(cards))):
-                won_cards[j] += copies
-        i += 1
-
-    # Calculate the total number of scratchcards including the original and won copies
-    total_scratchcards += sum(won_cards)
+    # Sum up the total number of scratchcards including original and won copies
+    total_scratchcards = sum(card_counters)
     return total_scratchcards
 
 
