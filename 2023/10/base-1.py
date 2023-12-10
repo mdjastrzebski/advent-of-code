@@ -1,4 +1,5 @@
-from collections import deque
+from math import floor
+
 file_path = "input-1b.txt"
 
 with open(file_path, "r") as file:
@@ -6,58 +7,68 @@ with open(file_path, "r") as file:
 
 map = [list(line) for line in lines]
 
-
-def print_map(map):
-    for line in map:
-        print("".join(line))
-
-
-start_coords = None
+# Find start point
 for y, line in enumerate(map):
     for x, char in enumerate(line):
         if char == 'S':
-            start_coords = (x, y)
+            start = (x, y)
             break
 
-print("INPUT", start_coords)
-print_map(map)
-
-north_pipes = set(['|', 'J', 'L', 'S'])
-south_pipes = set(['|', '7', 'F', 'S'])
-east_pipes = set(['-', 'L', 'F', 'S'])
-west_pipes = set(['-', 'J', '7', 'S'])
+# Helper
 
 
-def bfs(map, start_coords):
-    queue = deque([(start_coords, 0)])
-    visited = {start_coords: 0}
-
-    while queue:
-        coords, distance = queue.popleft()
-        x, y = coords
-
-        # Down
-        if y + 1 < len(map) and (x, y + 1) not in visited and map[y][x] in south_pipes and map[y + 1][x] in north_pipes:
-            queue.append(((x, y + 1), distance + 1))
-            visited[(x, y + 1)] = distance + 1
-
-        # Up
-        if y - 1 >= 0 and (x, y - 1) not in visited and map[y][x] in north_pipes and map[y - 1][x] in south_pipes:
-            queue.append(((x, y - 1), distance + 1))
-            visited[(x, y - 1)] = distance + 1
-
-        # Right
-        if x + 1 < len(map[y]) and (x + 1, y) not in visited and map[y][x] in east_pipes and map[y][x + 1] in west_pipes:
-            queue.append(((x + 1, y), distance + 1))
-            visited[(x + 1, y)] = distance + 1
-
-        # Left
-        if x - 1 >= 0 and (x - 1, y) not in visited and map[y][x] in west_pipes and map[y][x - 1] in east_pipes:
-            queue.append(((x - 1, y), distance + 1))
-            visited[(x - 1, y)] = distance + 1
-
-    return max(visited.values())
+def print_map(name, map):
+    print(name, "MAP")
+    for line in map:
+        print("".join(line))
+    print()
 
 
-result = bfs(map, start_coords)
-print("\nRESULT", result)
+print_map("INPUT", map)
+print("START", start)
+
+pipe = {
+    'S': "NSEW",
+    '|': "NS",
+    '-': "EW",
+    'J': "NW",
+    'L': "NE",
+    '7': "SW",
+    'F': "SE",
+    ".": "",
+}
+
+# Map edges
+lim_y = len(map)
+lim_x = len(map[0])
+
+current = start
+path = [start]
+path_set = set(start)
+
+# Walk through the pipe
+while True:
+    cx, cy = current
+
+    if cy + 1 < lim_y and "N" in pipe[map[cy + 1][cx]] and (cx, cy + 1) not in path_set:
+        current = (cx, cy + 1)
+    elif cy - 1 >= 0 and "S" in pipe[map[cy - 1][cx]] and (cx, cy - 1) not in path_set:
+        current = (cx, cy - 1)
+    elif cx + 1 < lim_x and "W" in pipe[map[cy][cx + 1]] and (cx + 1, cy) not in path_set:
+        current = (cx + 1, cy)
+    elif cx - 1 >= 0 and "E" in pipe[map[cy][cx - 1]] and (cx - 1, cy) not in path_set:
+        current = (cx - 1, cy)
+    else:
+        raise Exception("No where to go", current)
+
+    if current == start:
+        break
+
+    path.append(current)
+    path_set.add(current)
+
+
+print("PATH", path)
+
+# Max dist is circumeference / 2 (round down)
+print("RESULT", floor(len(path)/2))
