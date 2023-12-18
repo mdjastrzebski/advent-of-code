@@ -11,6 +11,54 @@ opposite = {
     "down": "up"
 }
 
+next_dir = {
+    "": [(0, 1, "down"), (0, -1, "up"), (-1, 0, "left"), (1, 0, "right")],
+    "right": [(0, 1, "down"), (0, -1, "up")],
+    "left": [(0, 1, "down"), (0, -1, "up")],
+    "up": [(-1, 0, "left"), (1, 0, "right")],
+    "down": [(-1, 0, "left"), (1, 0, "right")]
+}
+
+
+def heuristic(a, b):
+    (x1, y1) = a
+    (x2, y2) = b
+    return abs(x1 - x2) + abs(y1 - y2)
+
+
+def a_star(map, start, end):
+    start_x = (start[0], start[1], "")
+    queue = [(0, start_x)]
+    costs = {start_x: 0}
+    paths = {start_x: []}
+    heuristic_costs = {start_x: heuristic(start, end)}
+
+    while queue:
+        (_, current) = heapq.heappop(queue)
+        (x, y, dir) = current
+
+        if (x, y) == end:
+            return costs[current], paths[current]
+
+        for dx, dy, n_dir in next_dir[dir]:
+            for m in range(1, 4):
+                nx, ny = x + m*dx, y + m*dy
+                next = (nx, ny, n_dir)
+
+                if 0 <= nx < len(map[0]) and 0 <= ny < len(map):
+                    move_distance = 0
+                    for i in range(1, m+1):
+                        move_distance += int(map[y + i*dy][x + i*dx])
+
+                    new_cost = costs[current] + move_distance
+
+                    if next not in costs or new_cost < costs[next]:
+                        costs[next] = new_cost
+                        heuristic_cost = new_cost + heuristic((nx, ny), end)
+                        paths[next] = paths[current] + [next]
+                        heapq.heappush(queue, (heuristic_cost, next))
+                        heuristic_costs[next] = heuristic_cost
+
 
 def dijkstra(map, start, end):
     start_x = (start[0], start[1], "")
@@ -45,5 +93,5 @@ def dijkstra(map, start, end):
     return end_distance[0], paths[end_distance[1]]
 
 
-result, paths = dijkstra(map, (0, 0), (len(map[0]) - 1, len(map) - 1))
+result, paths = a_star(map, (0, 0), (len(map[0]) - 1, len(map) - 1))
 print("RESULT", result)
